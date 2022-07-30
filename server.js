@@ -7,9 +7,7 @@ const app = express()
 const expressLayouts = require('express-ejs-layouts')
 const bodyParser = require('body-parser')
 
-const indexRouter = require('./routes/index')
-const loginRouter = require('./routes/login')
-const registerRouter = require('./routes/register')
+const indexRouter = require('./routes/index.js')
 
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
@@ -26,7 +24,5 @@ db.once('open', () => console.log('Connected to Mongoose'))
 
 
 app.use('/', indexRouter)
-app.use('/login', loginRouter)
-app.use('/register', registerRouter)
 
 app.listen(process.env.PORT || 3000)
