@@ -2,17 +2,17 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const User = require('../models/user')
+const passport = require('passport')
 
-router.get('/', (req, res) => {
+router.get('/', checkAuthenticated, (req, res) => {
   res.render('index')
 })
 
-router.get('/register', (req,res) =>{
+router.get('/register',checkNotAuthenticated, (req,res) =>{
   res.render('users/register.ejs')
 })
 
 function auth(req, res, next) {
-  console.log("Authenticating user")
   User.findOne({email: req.body.email}, (err,user) => {
     if(err){
       console.error(err)
@@ -21,7 +21,6 @@ function auth(req, res, next) {
         next()
         return
       }else{
-        console.log("This email has already been used")
         res.send("This email has already been used")
         //TODO display message to screen
       }
@@ -29,7 +28,7 @@ function auth(req, res, next) {
   })
 }
 //create user
-router.post('/register', auth, async (req,res) =>{
+router.post('/register',checkNotAuthenticated, auth, async (req,res) =>{
   //hashes password
   await bcrypt.hash(req.body.password, 10, async(err, hash) => {
     if(err){
@@ -41,45 +40,42 @@ router.post('/register', auth, async (req,res) =>{
         email: req.body.email,
         password: hash
       })
-      console.log(newUser)
     }
   });
   res.redirect('/login')
 })
 
 
-router.get('/login', (req,res) =>{
+router.get('/login',checkNotAuthenticated, (req,res) =>{
   res.render('users/login.ejs')
 })
 
-//TODO when creating user password is not saved
-router.post('/login', async (req,res) =>{
-  User.findOne({email: req.body.email}, async (err,user) => {
-    if(err){
-      console.error(err)
-    }else{
-      console.log("user: " + user)
-      try{
-        // Load hash from your password DB.
-        console.log("Body Password: " + req.body.password)
-        console.log("User Password: " + user.password)
-        const compare = await bcrypt.compare(req.body.password, user.password, function(err, result) {
-          if(err){
-            console.error(err)
-          }else if(result){
-            console.log("logged in")
-            res.redirect('/')
-            //TODO code for login
-          }else{
-            console.log('Incorrect Password')
-            //TODO redirect to login with same email
-          }
-        })
-      }catch{
-        res.status(500).send()
-      }
-    }
-  })
+router.post('/login',checkNotAuthenticated, passport.authenticate('local', {
+  successRedirect: '/',
+  failureRedirect: '/login',
+  failureFlash: true
+}))
+
+//log out user
+router.delete('/logout', (req, res) => {
+  req.logOut( (err) =>{
+    if (err) { return next(err); }})
+  res.redirect('/login')
 })
+
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next()
+  }
+
+  res.redirect('/login')
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect('/')
+  }
+  next()
+}
 
 module.exports = router
