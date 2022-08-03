@@ -1,0 +1,39 @@
+TODO: 
+add creation date to user
+on technician/new page, display services with js
+
+Things to consider:
+when scheduling, multiple technicians can work each service:
+  technician 1 => user1.pedicure
+  technician 2 => user1.manicure
+  -cannot be done at the same time
+
+schema for appointment pick a day 
+employee show
+seach for employee that works that day of the week
+display employees
+the employee will have an array of furture appointment days
+if the desired day doesn't exist make new day 
+else pick that day from employee
+display the employee's schedule for that day 
+employee will have array of days they work
+
+client chooses day for appointment
+find technicians working that day that can do that service
+choose technician
+search technicia's array of upcoming for appointments by date
+
+technician{
+  uppcommingAppointments: [appointment]
+  pastAppointments: [appointment]
+  services: [service]
+  daysWorking: []
+
+array of days working
+cons: when tech wants to take vacation days working doesn't align
+can be solved by allowing tech to add block of unlimited time
+
+goals for today:
+create technician schema, tech creation 
+post /technician/new for creating new technician
+get /technician for technician page, shows upcoming appointments

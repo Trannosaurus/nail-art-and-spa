@@ -1,0 +1,21 @@
+<h1>New Service</h1>
+<form action="/service/new" method="POST" enctype="multipart/form-data">
+  <div>
+    <label for="name">Name</label>
+    <input type="text" name="name" required>
+  </div>
+  </div>
+  <div>
+    <label for="duration">Duration</label>
+    <input type="number" name="duration" required>
+  </div>
+  <div>
+    <label for="price">Price</label>
+    <input type="number" name="price" required>
+  </div> 
+  <div>
+    <label for="image">Image</label>
+    <input type="file" name="image" required>
+  </div> 
+  <button type="submit">Add</button>
+</form>

@@ -1,0 +1,13 @@
+<h1>Create an Appointment</h1>
+<% if (messages.error) { %>
+  <%= messages.error %>
+<% } %>
+<form action="/appointment" method="POST">
+  <div>
+    <label for="date">Date</label>
+    <input type="date" name="date" required>
+  </div>
+  <a href="/">Cancel</a>
+  <button type="submit">Book</button>
+</form>
+

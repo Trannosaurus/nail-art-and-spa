@@ -1,0 +1,38 @@
+<h1>New Technician</h1>
+<form action="/technician/new" method="POST">
+  <div>
+    <label for="name">Name</label>
+    <input type="text" name="name"  required>
+  </div>
+  <div>
+    <label for="email">Email</label>
+    <input type="email" name="email" required>
+  </div>
+  <div>
+    <label for="password">Password</label>
+    <input type="password" name="password" required>
+  </div>
+  <h2>Services</h2>
+  <div>
+    <input type="checkbox" id="manicure" name="services" value="manicure">
+    <label for="manicure"> Manicure</label><br>
+    <input type="checkbox" id="pedicure" name="services" value="pedicure">
+    <label for="pedicure"> Pedicure</label><br>
+  </div>
+  <h2>Days Working</h2>
+  <div>
+    <input type="checkbox" id="monday" name="days" value="monday">
+    <label for="monday"> Monday</label><br>
+    <input type="checkbox" id="tuesday" name="daus" value="tuesday">
+    <label for="tuesday"> Tuesday</label><br>
+    <input type="checkbox" id="wednesday" name="days" value="wednesday">
+    <label for="wednesday"> Wednesday</label><br>
+    <input type="checkbox" id="thursday" name="days" value="thursday">
+    <label for="thursday"> Thursday</label><br>
+    <input type="checkbox" id="friday" name="days" value="friday">
+    <label for="fridau"> Friday</label><br>
+    <input type="checkbox" id="saturday" name="days" value="saturday">
+    <label for="saturday"> Saturday</label><br>
+  </div>
+  <button type="submit">Submit</button>
+</form>
