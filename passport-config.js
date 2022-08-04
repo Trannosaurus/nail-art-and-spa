@@ -1,7 +1,6 @@
 //configuring passport
 const LocalStrategy = require('passport-local').Strategy
 const User = require('./models/user')
-const Technician = require('./models/technician')
 const bcrypt = require('bcrypt')
 
 function initialize(passport) {

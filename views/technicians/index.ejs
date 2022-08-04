@@ -1,0 +1,11 @@
+<h2>Upcoming Appointments</h2>
+<div>
+  <% upcomingAppointments.forEach(appointment => { %>
+    <h3>Date: </h3>
+    <h3><%= appointment.date %></h3>
+    <h3>Technician: </h3>
+    <h3><%= appointment.technicianName %></h3>
+    <h3>Services: </h3>
+    <h3><%= appointment.services %></h3>
+  <% }) %>
+</div>

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
-const {appointmentSchema} = require('./appointment.js')
+const {serviceSchema, Service} = require('./service.js')
+const {appointmentSchema, Appointment} = require('./appointment.js')
 
 const userSchema = new mongoose.Schema({
   name:{
@@ -14,8 +15,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  services: [String],
   upcomingAppointments: [appointmentSchema], //array of appointmentid
-  pastAppointments: [appointmentSchema]
+  pastAppointments: [appointmentSchema],
+  daysWorking: [String],
+  role: { type: String, default: 'user' }
 })
 
 

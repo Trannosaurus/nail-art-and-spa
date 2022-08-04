@@ -4,6 +4,12 @@ const bcrypt = require('bcrypt')
 const User = require('../models/user')
 const passport = require('passport')
 const flash = require('express-flash')
+const{
+  authRegister, 
+  checkAuthenticated, 
+  checkNotAuthenticated,
+  checkNotTechnician
+} = require('./authenticate.js')
 
 //user id is stored in req.session.passport.user
 router.get('/', checkAuthenticated, (req, res) => {
@@ -17,23 +23,8 @@ router.get('/register',checkNotAuthenticated, (req,res) =>{
   res.render('users/register.ejs')
 })
 
-function auth(req, res, next) {
-  User.findOne({email: req.body.email}, (err,user) => {
-    if(err){
-      console.error(err)
-    }else{
-      if(user == null){
-        next()
-        return
-      }else{
-        req.flash('No user with that email')
-        res.render('users/register.ejs')
-      }
-    }
-  })
-}
 //create user
-router.post('/register',checkNotAuthenticated, auth, async (req,res) =>{
+router.post('/register',checkNotAuthenticated, authRegister, async (req,res) =>{
   //hashes password
   await bcrypt.hash(req.body.password, 10, async(err, hash) => {
     if(err){
@@ -57,7 +48,11 @@ router.get('/login', checkNotAuthenticated, (req,res) =>{
 
 router.post('/login',
   checkNotAuthenticated, 
-  passport.authenticate('local', {successRedirect: '/',failureRedirect: '/login', failureFlash: true})
+  passport.authenticate('local', {failureRedirect: '/login', failureFlash: true}),
+  checkNotTechnician,
+  (req,res) =>{
+    res.redirect('/')
+  }
 )
 
 //log out user
@@ -66,20 +61,5 @@ router.delete('/logout', (req, res) => {
     if (err) { return next(err); }})
   res.redirect('/login')
 })
-
-function checkAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next()
-  }
-
-  res.redirect('/login')
-}
-
-function checkNotAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return res.redirect('/')
-  }
-  next()
-}
 
 module.exports = router

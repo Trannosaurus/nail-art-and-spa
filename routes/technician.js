@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
-const Technician = require('../models/technician')
+const User = require('../models/user')
 const {serviceSchema, Service, imageBasePath} = require('../models/service')
+const {checkTechnician, checkAuthenticated} = require('./authenticate.js')
 
 //form for creating new technician
 router.get('/new', (req,res) => {
@@ -17,12 +18,13 @@ router.post('/new', async (req,res) => {
     if(err){
       console.error("error" + err)
     }else{
-      const technician = await Technician.create({
+      const technician = await User.create({
           name: req.body.name,
           email: req.body.email,
           password: hash,
           services: req.body.services,
-          daysWorking: req.body.days
+          daysWorking: req.body.days,
+          role: 'technician'
       })
       res.redirect('/login')
     }
@@ -30,12 +32,15 @@ router.post('/new', async (req,res) => {
 }) 
 
 //display upcoming appointments
-router.get('/', (req,res) => {
-  res.send("uppcomming appointnments")
+router.get('/', checkAuthenticated, checkTechnician, (req,res) => {
+  User.findById(req.session.passport.user, (err,user) =>{
+    console.log(user.upcomingAppointments)
+    res.render('technicians/index.ejs', {upcomingAppointments: user.upcomingAppointments})
+  })
 })
 
 //create blocks
-router.post('/', (req,res) => {
+router.post('/', checkAuthenticated, checkTechnician, (req,res) => {
   res.send("blocks")
 })
 
