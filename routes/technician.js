@@ -2,11 +2,16 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const Technician = require('../models/technician')
+const {serviceSchema, Service, imageBasePath} = require('../models/service')
 
+//form for creating new technician
 router.get('/new', (req,res) => {
-  res.render('technicians/new.ejs')
+  Service.find((err,services) =>{
+    res.render('technicians/new.ejs', {services:services})
+  })
 })
 
+//create new technician
 router.post('/new', async (req,res) => {
   await bcrypt.hash(req.body.password, 10, async(err, hash) => {
     if(err){
@@ -19,6 +24,7 @@ router.post('/new', async (req,res) => {
           services: req.body.services,
           daysWorking: req.body.days
       })
+      res.redirect('/login')
     }
   });
 }) 

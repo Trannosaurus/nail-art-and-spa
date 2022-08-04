@@ -15,7 +15,7 @@ const technicianSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  services: [serviceSchema],
+  services: [String],
   upcomingAppointments: [appointmentSchema], //array of appointmentid
   pastAppointments: [appointmentSchema],
   daysWorking: [String],

@@ -12,13 +12,15 @@
     <label for="password">Password</label>
     <input type="password" name="password" required>
   </div>
+   
   <h2>Services</h2>
   <div>
-    <input type="checkbox" id="manicure" name="services" value="manicure">
-    <label for="manicure"> Manicure</label><br>
-    <input type="checkbox" id="pedicure" name="services" value="pedicure">
-    <label for="pedicure"> Pedicure</label><br>
+    <% services.forEach(service => { %>
+      <input type="checkbox" name="services" value="<%= service.name %>">
+      <label for="<%= service.name %>"> <%= service.name %> </label><br>
+    <% }) %>
   </div>
+
   <h2>Days Working</h2>
   <div>
     <input type="checkbox" id="monday" name="days" value="monday">

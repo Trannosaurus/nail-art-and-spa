@@ -13,7 +13,7 @@ const methodOverride = require('method-override')
 
 const indexRouter = require('./routes/index.js')
 const serviceRouter = require('./routes/service.js')
-//const technicianRouter = require('./routes/technician.js')
+const technicianRouter = require('./routes/technician.js')
 
 const initializePassport = require('./passport-config')
 initializePassport(passport)
@@ -43,6 +43,6 @@ db.once('open', () => console.log('Connected to Mongoose'))
 
 app.use('/', indexRouter)
 app.use('/service', serviceRouter)
-//app.use('/technician', technicianRouter)
+app.use('/technician', technicianRouter)
 
 app.listen(process.env.PORT || 3000)
