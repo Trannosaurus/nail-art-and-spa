@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   upcomingAppointments: [appointmentSchema], //array of appointmentid
   pastAppointments: [appointmentSchema],
   daysWorking: [String],
-  role: { type: String, default: 'user' }
+  role: [{ type: String, default: 'user' }]
 })
 
 

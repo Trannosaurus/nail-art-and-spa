@@ -27,7 +27,7 @@ function checkAuthenticated(req, res, next) {
 async function checkNotAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     const user = await User.findById(req.session.passport.user)
-    if(user.role === "technician"){
+    if(user.role.includes("technician")){
       console.log(user)
       return res.redirect('/technician')
     }else{
@@ -39,7 +39,7 @@ async function checkNotAuthenticated(req, res, next) {
 
 function checkTechnician(req, res, next){
   User.findById(req.session.passport.user, (err,user) =>{
-    if(user.role === "technician"){
+    if(user.role.includes("technician")){
       return next()
     }else{
       res.send('you do not have permission for this page')
@@ -48,8 +48,8 @@ function checkTechnician(req, res, next){
 }
 
 function checkNotTechnician(req, res, next){
-  User.findOne({email: req.body.email, role: "technician" }, (err,user) =>{
-    if(user){
+  User.findById(req.session.passport.user, (err,user) =>{
+    if(user.role.includes("technician")){
       res.redirect('/technician')
     }else{
       return next()
@@ -57,9 +57,18 @@ function checkNotTechnician(req, res, next){
   })
 }
 
+async function checkAdmin(req, res, next){
+  const user = await User.findById(req.session.passport.user)
+  if(user.role.includes("admin")){
+    return next()
+  }else{
+    res.send('you do not have permission for this page')
+  }
+}
 
 module.exports.authRegister = authRegister
 module.exports.checkNotAuthenticated = checkNotAuthenticated
 module.exports.checkAuthenticated = checkAuthenticated
 module.exports.checkTechnician = checkTechnician
 module.exports.checkNotTechnician = checkNotTechnician
+module.exports.checkAdmin = checkAdmin

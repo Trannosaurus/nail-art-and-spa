@@ -11,12 +11,13 @@ const upload = multer({
     callback(null, imageMimeTypes.includes(file.mimetype))
   }
 })
+const {checkAdmin, checkAuthenticated} = require('./authenticate.js')
 
-router.get('/new', (req,res) => {
+router.get('/new', checkAuthenticated, checkAdmin,  (req,res) => {
   res.render('services/new.ejs')
 })
 
-router.post('/new', upload.single('image'), async (req,res) => {
+router.post('/new',checkAuthenticated, checkAdmin, upload.single('image'), async (req,res) => {
   const fileName = req.file != null ? req.file.filename : null
   const newService = await Service.create({
     name: req.body.name,
