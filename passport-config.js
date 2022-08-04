@@ -9,11 +9,6 @@ function initialize(passport) {
   const authenticate= (email, password, done) => {
     User.findOne({ email: email }, function (err, user) {
       if (err) { return done(err); }
-      if(!user){
-        Technician.findOne({ email: email }, (err,technician) => {
-          return done(null,technician)
-        }
-      }
       if (!user) { return done(null, false, {message:'No user with that email'}); }
       else{
         bcrypt.compare(password, user.password, (err,res)=>{
