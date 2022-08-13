@@ -3,8 +3,8 @@ const {Service, serviceSchema} = require('./service.js')
 
 const appointmentSchema = new mongoose.Schema({
   date : Date,
-  technicianName: String,
-  customerId: mongoose.ObjectId,
+  technicians_id: [mongoose.ObjectId],
+  customer_id: mongoose.ObjectId,
   services: [serviceSchema],
   duration: Number,
 })

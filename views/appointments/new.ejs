@@ -1,0 +1,111 @@
+<h1>Book an Appointment</h1>
+<% if (messages.error) { %>
+<%= messages.error %>
+<% } %>
+<form action="/appointment/new" method="POST">
+
+  <div id="cart">
+    <h3>Cart</h3>
+  </div>
+
+
+  <div>
+    <div>
+      <label for="date">Date</label>
+      <input id="date" type="date" required>
+    </div>
+
+    <div>
+      <% services.forEach(service => { %>
+        <div id="<%= service.name %>" onclick="serviceSelect('<%=service.name%>','<%=service.price%>','<%=service.duration%>')">
+          <img height="150" width="100" src="<%= service.imagePath %>">
+          <h3><%= service.name %></h3>
+        </div>
+      <% }) %>
+    </div>
+    <h3 onclick="showTechnicians()">Next</h3>
+  </div>
+
+
+  <div>
+    <label for="technicians">Choose a technician</label>
+    <select id="technicians" onchange="selectTechnician()">
+      <option id="default" value="No Preferance">Default</option>
+    </select>
+    <div id="appointmentTimes">
+    </div>
+  </div>
+
+
+  <a href="/">Cancel</a>
+  <button type="submit" onclick="">Submit</button>
+</form>
+
+<script>
+const cart = [];
+function serviceSelect(name, price, duration){
+  //adds service to cart
+  const service = {name: name, price: price, duration: duration}
+  cart.push(service)
+
+  //increment cart
+  const cartElement = document.getElementById("cart")
+  cartElement.innerHTML = "cart " + cart.length
+
+  //TODO change element state and make cart look good
+  //const service = document.getElementById(name)
+}
+
+function showTechnicians(){
+  //TODO call animation to switch to next div
+  const weekday = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+  //date in form of year-month-day
+  const date = document.getElementById("date").value
+  const d = new Date(date.replace(/-/g, '\/'))
+  const day = weekday[d.getDay()]
+
+  //creates technician and disables if they are not working that day of the week
+  //TODO show that technician doesn't work that day
+  <% technicians.forEach(technician => { %>
+    const techOption = document.createElement("option")
+    techOption.setAttribute("value","<%=technician.name%>")
+    const node = document.createTextNode("<%=technician.name%>");
+    techOption.appendChild(node); 
+    const daysWorkingString = "<%=technician.daysWorking%>"
+    const daysWorking = daysWorkingString.split(',')
+    console.log(daysWorking)
+    if(!daysWorking.includes(day)){
+      console.log("not working this day")
+      techOption.setAttribute("disabled","")
+    }
+    const select = document.getElementById("technicians")
+    select.appendChild(techOption)
+  <% }) %>
+}
+function selectTechnician(){
+    const appointmentDiv = document.getElementById("appointmentTimes")
+    //i = 570 bc thats the time in minutes for 9:30
+    // <1140 bc that 7 pm
+    for(let i = 570; i<1140; i += 15){
+      const timeLabel = document.createElement("label")
+      const timeInput = document.createElement("input")
+
+      const hour = Math.floor(i/60)
+      const formatedHour = hour > 12 ? hour - 12 : hour
+      const minute = i%60
+      const formatedMinute = minute<10 ? "0"+minute: minute
+      const time = formatedHour + ':' + formatedMinute
+
+      const node = document.createTextNode(time);
+      timeLabel.appendChild(node); 
+      timeInput.setAttribute("type","radio")
+      timeInput.setAttribute("name","timeSlot")
+      timeInput.setAttribute("id", time)
+      timeInput.setAttribute("value",time)
+      timeLabel.setAttribute("for",time)
+      appointmentDiv.appendChild(timeInput)
+      appointmentDiv.appendChild(timeLabel)
+    }
+
+}
+</script>
