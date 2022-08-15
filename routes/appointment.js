@@ -20,35 +20,30 @@ router.post('/', checkAuthenticated, (req, res) => {
   res.redirect('index')
 })
 */
-/*
-<%- function showTechnicians(){ %>
-  <% const technicians = <%= technicians %>
-  <% console.log(technicians) %>
-  <% const techLabel = document.createElement("label") %>
-  <% const techInput = document.createElement("input") %>
-  <% techInput.setAttribute("type","radio") %>
-  <% const node = document.createTextNode("Technician"); %>
-  <% techLabel.appendChild(node); %>
-  <% const element = document.getElementById("technicianDiv"); %>
-  <% element.appendChild(techLabel); %>
-  <% element.appendChild(techInput); %>
-<% } %>
-*/
 //checkAuthenticated add this back in after
-router.get('/new', async (req,res) => {
+router.get('/new', checkAuthenticated, async (req,res) => {
   const technicians = await User.find({role: "technician"})
   const services = await Service.find({})
   res.render('appointments/new.ejs', 
     {technicians: technicians,
     services: services})
 })
-router.post('/new',  async (req,res) => {
+router.post('/new', checkAuthenticated, async (req,res) => {
+  const technician = await User.find({name: req.body.technicians})
+  const date = new Date(req.body.date)
+  const time = req.body.timeSlot
+  const customer_id = req.session.passport.user
+  const duration = req.body.cartTotalDuration
+  const price = req.body.cartTotalPrice
+  const servicesString = req.body.services
+  const servicesArray = servicesString.split(',')
+  const services = servicesArray.slice(0,servicesArray.length-1)
+  console.log(services)
+  /*
   await Appointment.create({
-    date: new Date(),
-    technicians_id: req.body.technicians,
-    //customer_id: req.session.passport.user,
-    services: req.body.services,
+    date: date
   })
+  */
 })
 
 module.exports = router

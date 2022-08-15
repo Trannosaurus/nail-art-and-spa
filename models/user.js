@@ -16,8 +16,8 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   services: [String],
-  upcomingAppointments: [appointmentSchema], //array of appointmentid
-  pastAppointments: [appointmentSchema],
+  upcomingAppointments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' }],
+  pastAppointments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' }],
   daysWorking: [String],
   role: [{ type: String, default: 'user' }]
 })

@@ -4,15 +4,20 @@
 <% } %>
 <form action="/appointment/new" method="POST">
 
-  <div id="cart">
-    <h3>Cart</h3>
+  <div id="cart-container">
+    <h3>Cart: </h3>
+    <p id="cartCount" name="cartCount">0<p>
+    <h3>Total: </h3>
+    <p name="total" id="total">$0<p>
+    <h3>Duration: </h3>
+    <p name="totalDuration" id="totalDuration">0<p>
   </div>
 
 
-  <div>
+  <div class="card active">
     <div>
       <label for="date">Date</label>
-      <input id="date" type="date" required>
+      <input name="date" id="date" type="date" required>
     </div>
 
     <div>
@@ -27,30 +32,68 @@
   </div>
 
 
-  <div>
+  <div class="card">
     <label for="technicians">Choose a technician</label>
-    <select id="technicians" onchange="selectTechnician()">
+    <select id="technicians" name="technicians" onchange="showTimes()">
       <option id="default" value="No Preferance">Default</option>
     </select>
     <div id="appointmentTimes">
     </div>
   </div>
 
+   <!-- these fields will be sent to server -->
+  <input type="hidden" id="cartTotalDuration" name="cartTotalDuration">
+  <input type="hidden" id="cartTotalPrice" name="cartTotalPrice">
+  <input type="hidden" id="services" name="services">
 
   <a href="/">Cancel</a>
-  <button type="submit" onclick="">Submit</button>
+  <button type="submit" onclick="serverVariables()">Submit</button>
 </form>
 
 <script>
 const cart = [];
+const cartTotal = 0;
+const cartTotalDuration = 0;
 function serviceSelect(name, price, duration){
   //adds service to cart
   const service = {name: name, price: price, duration: duration}
   cart.push(service)
 
   //increment cart
-  const cartElement = document.getElementById("cart")
-  cartElement.innerHTML = "cart " + cart.length
+  const cartElement = document.getElementById("cartCount")
+  cartElement.innerHTML = cart.length
+
+  //create service html in cart div
+  const serviceName = document.createElement("p")
+  serviceName.setAttribute("id","serviceName")
+  const servicePrice = document.createElement("p")
+  servicePrice.setAttribute("id","servicePrice")
+  const serviceDuration = document.createElement("p")
+  serviceName.setAttribute("id","serviceName")
+  const nameNode = document.createTextNode(name);
+  serviceName.appendChild(nameNode); 
+  const priceNode = document.createTextNode(price)
+  servicePrice.appendChild(priceNode); 
+  const durationNode = document.createTextNode(duration)
+  serviceDuration.appendChild(durationNode); 
+
+  const serviceDiv = document.createElement("div")
+  const serviceDivId = name+"div"
+  serviceDiv.setAttribute("id",serviceDivId)
+  serviceDiv.appendChild(serviceName)
+  serviceDiv.appendChild(servicePrice)
+  serviceDiv.appendChild(serviceDuration)
+
+  const cartContainer = document.getElementById("cart-container")
+  cartContainer.insertBefore(serviceDiv, cartContainer.firstChild)
+
+  //cart total price
+  const total = document.getElementById("total")
+  total.innerHTML = (cartTotalDuration+parseInt(duration))
+
+  //cart total duration
+  const totalDuration = document.getElementById("totalDuration")
+  totalDuration.innerHTML = (cartTotal+parseInt(price))
 
   //TODO change element state and make cart look good
   //const service = document.getElementById(name)
@@ -73,7 +116,6 @@ function showTechnicians(){
     techOption.appendChild(node); 
     const daysWorkingString = "<%=technician.daysWorking%>"
     const daysWorking = daysWorkingString.split(',')
-    console.log(daysWorking)
     if(!daysWorking.includes(day)){
       console.log("not working this day")
       techOption.setAttribute("disabled","")
@@ -82,8 +124,16 @@ function showTechnicians(){
     select.appendChild(techOption)
   <% }) %>
 }
-function selectTechnician(){
+function showTimes(){
     const appointmentDiv = document.getElementById("appointmentTimes")
+
+    //TODO do this after i figure out how to make appointment
+    //filter times that the technician already has booked
+    const technicianName = document.getElementById("technicians").value
+    <% technicians.forEach(technician => { %>
+      <% console.log(technician.upcomingAppointments) %>
+    <% }) %>
+
     //i = 570 bc thats the time in minutes for 9:30
     // <1140 bc that 7 pm
     for(let i = 570; i<1140; i += 15){
@@ -91,21 +141,38 @@ function selectTechnician(){
       const timeInput = document.createElement("input")
 
       const hour = Math.floor(i/60)
-      const formatedHour = hour > 12 ? hour - 12 : hour
       const minute = i%60
+      const time = hour + ':' + minute
+      const formatedHour = hour > 12 ? hour - 12 : hour
       const formatedMinute = minute<10 ? "0"+minute: minute
-      const time = formatedHour + ':' + formatedMinute
+      const formatedTime = formatedHour + ':' + formatedMinute
 
-      const node = document.createTextNode(time);
+      const node = document.createTextNode(formatedTime);
       timeLabel.appendChild(node); 
       timeInput.setAttribute("type","radio")
       timeInput.setAttribute("name","timeSlot")
       timeInput.setAttribute("id", time)
       timeInput.setAttribute("value",time)
       timeLabel.setAttribute("for",time)
+
       appointmentDiv.appendChild(timeInput)
       appointmentDiv.appendChild(timeLabel)
     }
+}
+function serverVariables(){
+  const durationElement = document.getElementById("cartTotalDuration")
+  const priceElement = document.getElementById("cartTotalPrice")
+  const duration = document.getElementById("totalDuration").innerHTML
+  const price = document.getElementById("total").innerHTML
+  durationElement.setAttribute("value",duration)
+  priceElement.setAttribute("value",price)
 
+  const services = document.getElementById("services")
+  let value = ""
+  cart.forEach(service =>{
+    value += service.name 
+    value += ','
+  })
+  services.setAttribute("value", value)
 }
 </script>
