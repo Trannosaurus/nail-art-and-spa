@@ -22,14 +22,14 @@ router.post('/', checkAuthenticated, (req, res) => {
 */
 //checkAuthenticated add this back in after
 router.get('/new', checkAuthenticated, async (req,res) => {
-  const technicians = await User.find({role: "technician"})
+  const technicians = await User.find({role: "technician"}).lean()
   const services = await Service.find({})
   res.render('appointments/new.ejs', 
     {technicians: technicians,
     services: services})
 })
 router.post('/new', checkAuthenticated, async (req,res) => {
-  const technician = await User.find({name: req.body.technicians})
+  const technician = await User.findOne({name: req.body.technicians})
   const date = new Date(req.body.date)
   const time = req.body.timeSlot
   const customer_id = req.session.passport.user
@@ -38,12 +38,24 @@ router.post('/new', checkAuthenticated, async (req,res) => {
   const servicesString = req.body.services
   const servicesArray = servicesString.split(',')
   const services = servicesArray.slice(0,servicesArray.length-1)
-  console.log(services)
-  /*
-  await Appointment.create({
-    date: date
+  console.log("tech id: " + technician._id)
+  console.log("date: " + date)
+  console.log("time: " + time)
+  console.log("customer_id: " + customer_id)
+  console.log("duration: "  +duration)
+  console.log("price: "  + price)
+  console.log("services: " + services)
+
+  const appointment = await Appointment.create({
+    date: date,
+    time:time,
+    customer_id:customer_id,
+    technician_id:technician._id,
+    duration:duration,
+    price:price,
+    services:services
   })
-  */
+  console.log(appointment)
 })
 
 module.exports = router

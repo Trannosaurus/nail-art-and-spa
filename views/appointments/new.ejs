@@ -8,7 +8,7 @@
     <h3>Cart: </h3>
     <p id="cartCount" name="cartCount">0<p>
     <h3>Total: </h3>
-    <p name="total" id="total">$0<p>
+    <p name="total" id="total">0<p>
     <h3>Duration: </h3>
     <p name="totalDuration" id="totalDuration">0<p>
   </div>
@@ -51,6 +51,8 @@
 </form>
 
 <script>
+let date = "";
+
 const cart = [];
 const cartTotal = 0;
 const cartTotalDuration = 0;
@@ -103,9 +105,9 @@ function showTechnicians(){
   //TODO call animation to switch to next div
   const weekday = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
   //date in form of year-month-day
-  const date = document.getElementById("date").value
-  const d = new Date(date.replace(/-/g, '\/'))
-  const day = weekday[d.getDay()]
+  const dateElement = document.getElementById("date").value
+  date = new Date(dateElement.replace(/-/g, '\/'))
+  const day = weekday[date.getDay()]
 
   //creates technician and disables if they are not working that day of the week
   //TODO show that technician doesn't work that day
@@ -127,25 +129,35 @@ function showTechnicians(){
 function showTimes(){
     const appointmentDiv = document.getElementById("appointmentTimes")
 
-    //TODO do this after i figure out how to make appointment
-    //filter times that the technician already has booked
     const technicianName = document.getElementById("technicians").value
+
+    //get upcomign appointments on selected day
+    //filters upcoming appointments on that day and puts the times into an array
+    const upcomingAppointments = [];
     <% technicians.forEach(technician => { %>
-      <% console.log(technician.upcomingAppointments) %>
+      <%for(let i=0;i<technician.upcommingAppointments.length;i++){%>
+      //this is for testing later
+        if("<%=technician.upcommingAppointments[i].date%>" === date.toString()){
+          upcomingAppointments.push("<%=technician.upcommingAppointments[i].time%>")
+        }
+      <% } %>
     <% }) %>
 
     //i = 570 bc thats the time in minutes for 9:30
     // <1140 bc that 7 pm
     for(let i = 570; i<1140; i += 15){
-      const timeLabel = document.createElement("label")
-      const timeInput = document.createElement("input")
-
       const hour = Math.floor(i/60)
       const minute = i%60
-      const time = hour + ':' + minute
       const formatedHour = hour > 12 ? hour - 12 : hour
       const formatedMinute = minute<10 ? "0"+minute: minute
       const formatedTime = formatedHour + ':' + formatedMinute
+      const time = hour + ':' + formatedMinute
+      if(upcomingAppointments.includes(time)){
+        continue;
+      }
+
+      const timeLabel = document.createElement("label")
+      const timeInput = document.createElement("input")
 
       const node = document.createTextNode(formatedTime);
       timeLabel.appendChild(node); 
