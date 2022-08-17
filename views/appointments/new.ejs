@@ -50,52 +50,110 @@ const cart = [];
 let cartTotal = 0;
 let cartTotalDuration = 0;
 function serviceSelect(name, price, duration){
-  //adds service to cart
-  const service = {name: name, price: price, duration: duration}
-  cart.push(service)
+  if(!document.getElementById(name).classList.contains("active")){
+    //adds service to cart
+    const service = {name: name, price: price, duration: duration}
+    cart.push(service)
 
-  //increment cart
-  const cartElement = document.getElementById("cartCount")
-  cartElement.innerHTML = cart.length
+    //increment cart
+    const cartElement = document.getElementById("cartCount")
+    cartElement.innerHTML = cart.length
 
-  //create service html in cart div
-  const serviceName = document.createElement("p")
-  serviceName.setAttribute("id","serviceName")
-  const servicePrice = document.createElement("p")
-  servicePrice.setAttribute("id","servicePrice")
-  const serviceDuration = document.createElement("p")
-  serviceName.setAttribute("id","serviceName")
-  const nameNode = document.createTextNode(name);
-  serviceName.appendChild(nameNode); 
-  const priceNode = document.createTextNode(price)
-  servicePrice.appendChild(priceNode); 
-  const durationNode = document.createTextNode(duration)
-  serviceDuration.appendChild(durationNode); 
+    //create service html in cart div
+    const serviceName = document.createElement("p")
+    serviceName.setAttribute("id","serviceName")
+    const servicePrice = document.createElement("p")
+    servicePrice.setAttribute("id","servicePrice")
+    const serviceDuration = document.createElement("p")
+    serviceName.setAttribute("id","serviceName")
+    const nameNode = document.createTextNode(name);
+    serviceName.appendChild(nameNode); 
+    const priceNode = document.createTextNode(price)
+    servicePrice.appendChild(priceNode); 
+    const durationNode = document.createTextNode(duration)
+    serviceDuration.appendChild(durationNode); 
 
-  const serviceDiv = document.createElement("div")
-  const serviceDivId = name+"div"
-  serviceDiv.setAttribute("id",serviceDivId)
-  serviceDiv.appendChild(serviceName)
-  serviceDiv.appendChild(servicePrice)
-  serviceDiv.appendChild(serviceDuration)
+    const serviceDiv = document.createElement("div")
+    const serviceDivId = name+"div"
+    serviceDiv.setAttribute("id",serviceDivId)
+    serviceDiv.appendChild(serviceName)
+    serviceDiv.appendChild(servicePrice)
+    serviceDiv.appendChild(serviceDuration)
 
-  const cartContainer = document.getElementById("cart-container")
-  cartContainer.insertBefore(serviceDiv, cartContainer.firstChild)
+    const cartContainer = document.getElementById("cart-container")
+    cartContainer.insertBefore(serviceDiv, cartContainer.firstChild)
 
-  //cart total price
-  const total = document.getElementById("total")
-  cartTotal = parseInt(total.innerHTML)+parseInt(price)
-  total.innerHTML = cartTotal
+    //cart total price
+    const total = document.getElementById("total")
+    cartTotal = parseInt(total.innerHTML)+parseInt(price)
+    total.innerHTML = cartTotal
 
-  //cart total duration
-  const totalDuration = document.getElementById("totalDuration")
-  cartTotalDuration = parseInt(totalDuration.innerHTML)+parseInt(duration)
-  totalDuration.innerHTML = cartTotalDuration
+    //cart total duration
+    const totalDuration = document.getElementById("totalDuration")
+    cartTotalDuration = parseInt(totalDuration.innerHTML)+parseInt(duration)
+    totalDuration.innerHTML = cartTotalDuration
+
+    //give service icon active class
+    document.getElementById(name).setAttribute("class","active")
+  }else{
+    //remove service from cart
+    const serviceIndex = cart.findIndex(i => i.name === name)
+    cart.splice(serviceIndex,1)
+
+    //update cart count
+    const cartElement = document.getElementById("cartCount")
+    cartElement.innerHTML = cart.length
+
+    //remove service preview in cart
+    const serviceDivId = name+"div"
+    document.getElementById(serviceDivId).remove()
+
+    //update cart total and duration
+    const total = document.getElementById("total")
+    cartTotal = parseInt(total.innerHTML)-parseInt(price)
+    total.innerHTML = cartTotal
+
+    //cart total duration
+    const totalDuration = document.getElementById("totalDuration")
+    cartTotalDuration = parseInt(totalDuration.innerHTML)-parseInt(duration)
+    totalDuration.innerHTML = cartTotalDuration
+
+    document.getElementById(name).setAttribute("class","")
+  }
 
   //TODO change element state and make cart look good
 }
 
+function errorMsg(msg){
+  const error = document.createElement("div")
+  error.setAttribute("id","error")
+  const img = document.createElement("img")
+  img.setAttribute("src","/error.png")
+  img.setAttribute("width","120px")
+  const message = document.createElement("p")
+  message.innerHTML = msg
+  const errorBtn = document.createElement("button")
+  errorBtn.innerHTML = "Ok" 
+  errorBtn.setAttribute("onclick","errorBtnClick()")
+  error.appendChild(img)
+  error.appendChild(message)
+  error.appendChild(errorBtn)
+  const form = document.getElementsByTagName("form")
+  form[0].insertBefore(error,form[0].firstChild)
+}
+function errorBtnClick(){
+  document.getElementById("error").remove()
+}
 function showTechnicians(){
+  //if user hasnt chosen service or date
+  if(document.getElementById("date").value.length === 0){
+    errorMsg("Please choose a date first")
+    return
+  }
+  if(cart.length==0){
+    errorMsg("Please choose a service first")
+    return
+  }
   //TODO call animation to switch to next div
   const weekday = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
   //date in form of year-month-day
@@ -108,6 +166,8 @@ function showTechnicians(){
     const card = document.createElement("div")
     card.setAttribute("class","card")
     card.setAttribute("id","card"+i)
+
+    //create dropdown for technician
     const label = document.createElement("label")
     const labelNode = document.createTextNode("Choose a technician for: " + cart[i].name);
     label.appendChild(labelNode)
@@ -115,8 +175,20 @@ function showTechnicians(){
     const select = document.createElement("select")
     select.setAttribute("id","service"+i)
     select.setAttribute("onchange","showTimes("+i+")")
+    
+    // div for technician times
     const times = document.createElement("div")
     times.setAttribute("id","appointmentTimes"+i)
+
+    //button for next and back
+    const back = document.createElement("button")
+    back.innerHTML = "back"
+    back.setAttribute("onclick","technicianBack(" + i + ")")
+    back.setAttribute("type","button")
+    const next = document.createElement("button")
+    next.innerHTML = "next"
+    next.setAttribute("onclick","technicianNext()")
+    next.setAttribute("type","button")
 
     const defaultOption = document.createElement("option")
     defaultOption.setAttribute("value","default")
@@ -124,30 +196,49 @@ function showTechnicians(){
     defaultOption.appendChild(defaultNode)
     select.appendChild(defaultOption)
 
+    const numOfTechnicians = parseInt("<%=technicians.length%>")
+    const techArray = [];
+    let technician = {};
+    let name;
     <% technicians.forEach(technician => { %>
-      const techOption = document.createElement("option")
+      name = "<%=technician.name%>"
+      technician.name = name
+      console.log(technician.name)
+      techArray.push(technician)
+    <% }) %>
+    console.log("tech array: ")
+    techArray.forEach(tech => {
+      console.log(JSON.stringify(tech))
+    })
+    
+    let techOption = document.createElement("option")
+    let daysWorkingString, servicesString;
+    let daysWorking, services;
+    <% technicians.forEach(technician => { %>
+      //puts technician into dropdown
       techOption.setAttribute("value","<%=technician.name%>")
-      const node = document.createTextNode("<%=technician.name%>");
-      techOption.appendChild(node); 
-      const daysWorkingString = "<%=technician.daysWorking%>"
-      const daysWorking = daysWorkingString.split(',')
+      techOption.innerHTML = "<%=technician.name%>"
+      daysWorkingString = "<%=technician.daysWorking%>"
+      daysWorking = daysWorkingString.split(',')
       if(!daysWorking.includes(day)){
         console.log("not working this day")
         techOption.setAttribute("disabled","")
       }
-      const servicesString ="<%=technician.services%>"
-      const services = servicesString.split(',')
+      servicesString ="<%=technician.services%>"
+      services = servicesString.split(',')
       if(!services.includes(cart[i].name)){
         console.log("cannot do this service")
         techOption.setAttribute("disabled","")
       }
       select.appendChild(techOption)
     <% }) %>
-
+    
     //adds elements to card
     card.appendChild(label)
     card.appendChild(select)
     card.appendChild(times)
+    card.appendChild(back)
+    card.appendChild(next)
 
     const form = document.getElementsByTagName("form")
     form[0].insertBefore(card,form[0].lastElementChild)
@@ -163,13 +254,13 @@ function showTimes(num){
   const upcomingAppointments = [];
   <% technicians.forEach(technician => { %>
     <%for(let i=0;i<technician.upcommingAppointments.length;i++){%>
-    //this is for testing later
       if("<%=technician.upcommingAppointments[i].date%>" === date.toString()){
         upcomingAppointments.push("<%=technician.upcommingAppointments[i].time%>")
       }
     <% } %>
   <% }) %>
 
+  console.log(upcomingAppointments)
   //i = 570 bc thats the time in minutes for 9:30
   // <1140 bc that 7 pm
   for(let i = 570; i<1140; i += 15){
@@ -196,6 +287,22 @@ function showTimes(num){
 
     appointmentTimesDiv.appendChild(timeInput)
     appointmentTimesDiv.appendChild(timeLabel)
+  }
+}
+function technicianBack(){
+}
+function technicianNext(num){
+  const times = document.getElementsByName("timeSlot")
+  let selected = false;
+  for(let i=0;i<times.length;i++){
+    if(times.item(i).checked){
+      selected = true;
+      break;
+    }
+  }
+  if(!selected){
+    errorMsg("Please choose a time first")
+    return
   }
 }
 function serverVariables(){

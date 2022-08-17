@@ -38,6 +38,7 @@ router.post('/new', checkAuthenticated, async (req,res) => {
   const servicesString = req.body.services
   const servicesArray = servicesString.split(',')
   const services = servicesArray.slice(0,servicesArray.length-1)
+  /*
   console.log("tech id: " + technician._id)
   console.log("date: " + date)
   console.log("time: " + time)
@@ -56,6 +57,14 @@ router.post('/new', checkAuthenticated, async (req,res) => {
     services:services
   })
   console.log(appointment)
+  */
 })
 
 module.exports = router
+/*
+  //error message if no time is selected
+  if(document.getElementById("appointmentTimes"+0).value.length==0){
+    errorMsg("Please choose a time first")
+    return
+  }
+  */
