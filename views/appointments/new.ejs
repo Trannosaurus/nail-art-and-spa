@@ -44,6 +44,56 @@
 </form>
 
 <script>
+class Appointment{
+  constructor(date,time,technicians_id,duration){
+    this.date = date.substring(1,date.length-1)
+    this.time = time.substring(1,time.length-1)
+    const technicians = technicians_id.substring(1,technicians_id.length-1).split('","')
+    this.technicians_id = technicians
+    this.duration = duration
+  }
+}
+class Technician{
+  constructor(name, _id, daysWorkingString, servicesString, upcomingAppointmentsString){
+    this.name = name
+    this._id = _id
+    this.daysWorking = daysWorkingString.split(',')
+    this.services = servicesString.split(',')
+    upcomingAppointmentsString = upcomingAppointmentsString.split("&#34;").join('"')
+    upcomingAppointmentsString = upcomingAppointmentsString.substring(2,upcomingAppointmentsString.length-2).split("},{")
+    this.upcomingAppointments = [];
+    upcomingAppointmentsString.forEach(appointmentString =>{
+
+      const appointmentParams = appointmentString.split(/"\w+":/g)
+
+      const date = appointmentParams[2].substring(0,appointmentParams[2].length-1) 
+      const time = appointmentParams[1].substring(0,appointmentParams[1].length-1) 
+      const technicians_id = appointmentParams[3].substring(1,appointmentParams[3].length-2)
+      const duration = appointmentParams[6].substring(0,appointmentParams[6].length-1) 
+
+      this.upcomingAppointments.push(
+        new Appointment(date,time,technicians_id,duration)
+      )
+      allUpcomingAppointments.push(
+        new Appointment(date,time,technicians_id,duration)
+      )
+
+    })
+  }
+}
+const techArray = [];
+const allUpcomingAppointments = [];
+
+<% technicians.forEach(technician => { %>
+  techArray.push(new Technician(
+    "<%= technician.name %>",
+    "<%= technician._id %>",
+    "<%= technician.daysWorking %>",
+    "<%= technician.services %>",
+    "<%= JSON.stringify(technician.upcommingAppointments) %>"
+  ))
+<% }) %>
+
 let date = "";
 
 const cart = [];
@@ -162,7 +212,7 @@ function showTechnicians(){
   const day = weekday[date.getDay()]
 
   for(let i=0;i<cart.length;i++){
-    //create html elements for service
+    //creates card container for technician select and time select
     const card = document.createElement("div")
     card.setAttribute("class","card")
     card.setAttribute("id","card"+i)
@@ -174,7 +224,7 @@ function showTechnicians(){
     label.setAttribute("for","service"+i)
     const select = document.createElement("select")
     select.setAttribute("id","service"+i)
-    select.setAttribute("onchange","showTimes("+i+")")
+    select.setAttribute("onchange","changeTimes("+i+")")
     
     // div for technician times
     const times = document.createElement("div")
@@ -187,52 +237,107 @@ function showTechnicians(){
     back.setAttribute("type","button")
     const next = document.createElement("button")
     next.innerHTML = "next"
-    next.setAttribute("onclick","technicianNext()")
+    next.setAttribute("onclick","technicianNext(" + i + ")")
     next.setAttribute("type","button")
 
+    //populates default option in technician drop down
     const defaultOption = document.createElement("option")
     defaultOption.setAttribute("value","default")
-    const defaultNode = document.createTextNode("No Preferance");
+    const defaultNode = document.createTextNode("No Preference");
     defaultOption.appendChild(defaultNode)
     select.appendChild(defaultOption)
 
-    const numOfTechnicians = parseInt("<%=technicians.length%>")
-    const techArray = [];
-    let technician = {};
-    let name;
-    <% technicians.forEach(technician => { %>
-      name = "<%=technician.name%>"
-      technician.name = name
-      console.log(technician.name)
-      techArray.push(technician)
-    <% }) %>
-    console.log("tech array: ")
-    techArray.forEach(tech => {
-      console.log(JSON.stringify(tech))
-    })
-    
-    let techOption = document.createElement("option")
-    let daysWorkingString, servicesString;
-    let daysWorking, services;
-    <% technicians.forEach(technician => { %>
-      //puts technician into dropdown
-      techOption.setAttribute("value","<%=technician.name%>")
-      techOption.innerHTML = "<%=technician.name%>"
-      daysWorkingString = "<%=technician.daysWorking%>"
-      daysWorking = daysWorkingString.split(',')
-      if(!daysWorking.includes(day)){
+    const techniciansAvailable = [];
+
+    //populates select dropdown
+    techArray.forEach(technician =>{
+      let available = true;
+      const techOption = document.createElement("option")
+      techOption.setAttribute("value",technician.name)
+      techOption.innerHTML = technician.name
+      if(!technician.daysWorking.includes(day)){
         console.log("not working this day")
         techOption.setAttribute("disabled","")
+        available = false
       }
-      servicesString ="<%=technician.services%>"
-      services = servicesString.split(',')
-      if(!services.includes(cart[i].name)){
+      if(!technician.services.includes(cart[i].name)){
         console.log("cannot do this service")
         techOption.setAttribute("disabled","")
+        available = false
       }
       select.appendChild(techOption)
-    <% }) %>
-    
+
+      //adds technician to technicians available array if they can work that day
+      techniciansAvailable.push(technician.name)
+    })
+
+    //creates times for all technicians
+    const allUpcomingAppoinements = [];
+
+    //+1 bc we wanna run an additional time for default choice
+    for(let tech=0;tech<techArray.length+1;tech++){
+      const technicianTimesDiv = document.createElement("div")
+
+      let last = tech==techArray.length
+
+      const upcomingAppointments = [];
+      if(!last){
+        technicianTimesDiv.setAttribute("id", techArray[tech].name + "Times")
+        technicianTimesDiv.setAttribute("style", "display: none;")
+
+        //create an upcoming appointment times for technician on specified day
+        techArray[tech].upcomingAppointments.forEach(appointment =>{
+          if(appointment.date.substring(0,appointment.date.indexOf('T')) === dateElement){
+            upcomingAppointments.push(appointment.time)
+            allUpcomingAppointments.push(appointment.time)
+          }
+        })
+      }else{
+        technicianTimesDiv.setAttribute("id", "no_preference")
+      }
+
+
+      //k = 570 bc thats the time in minutes for 9:30
+      // <1140 bc that 7 pm
+      for(let k = 570; k<1140; k += 15){
+        const hour = Math.floor(k/60)
+        const minute = k%60
+        const formatedHour = hour > 12 ? hour - 12 : hour
+        const formatedMinute = minute<10 ? "0"+minute: minute
+        const formatedTime = formatedHour + ':' + formatedMinute
+        const time = hour + ':' + formatedMinute
+        if(last){
+          const occurr = allUpcomingAppointments.filter(appointment => appointment == time).length
+          if(occurr == techArray.length){
+            continue;
+          }
+        }
+        if(upcomingAppointments.includes(time)){
+          continue;
+        }
+        const timeLabel = document.createElement("label")
+        const timeInput = document.createElement("input")
+
+        let techName;
+        if(!last){
+          techName = techArray[tech].name
+        }else{
+          techName = "default"
+        }
+        const node = document.createTextNode(formatedTime);
+        timeLabel.appendChild(node); 
+        timeInput.setAttribute("type","radio")
+        timeInput.setAttribute("name","timeSlot"+i)
+        timeInput.setAttribute("id", techName+time)
+        timeInput.setAttribute("value",time)
+        timeLabel.setAttribute("for",techName+time)
+
+        technicianTimesDiv.appendChild(timeInput)
+        technicianTimesDiv.appendChild(timeLabel)
+      }
+      times.appendChild(technicianTimesDiv)
+    }
+
     //adds elements to card
     card.appendChild(label)
     card.appendChild(select)
@@ -244,55 +349,28 @@ function showTechnicians(){
     form[0].insertBefore(card,form[0].lastElementChild)
   }
 }
-function showTimes(num){
-  const card = document.getElementById("card"+num)
-  const technician = document.getElementById("service"+num).value
-  const appointmentTimesDiv = document.getElementById("appointmentTimes"+num)
-
-  //get upcoming appointments on selected day
-  //filters upcoming appointments on that day and puts the times into an array
-  const upcomingAppointments = [];
-  <% technicians.forEach(technician => { %>
-    <%for(let i=0;i<technician.upcommingAppointments.length;i++){%>
-      if("<%=technician.upcommingAppointments[i].date%>" === date.toString()){
-        upcomingAppointments.push("<%=technician.upcommingAppointments[i].time%>")
-      }
-    <% } %>
-  <% }) %>
-
-  console.log(upcomingAppointments)
-  //i = 570 bc thats the time in minutes for 9:30
-  // <1140 bc that 7 pm
-  for(let i = 570; i<1140; i += 15){
-    const hour = Math.floor(i/60)
-    const minute = i%60
-    const formatedHour = hour > 12 ? hour - 12 : hour
-    const formatedMinute = minute<10 ? "0"+minute: minute
-    const formatedTime = formatedHour + ':' + formatedMinute
-    const time = hour + ':' + formatedMinute
-    if(upcomingAppointments.includes(time)){
-      continue;
+function changeTimes(num){
+  const newSelect = document.getElementById("service"+num).value
+  const appointmentTimes = document.getElementById("appointmentTimes"+num).childNodes
+  appointmentTimes.forEach(times =>{
+    if(!times.hasAttribute("style")){
+      times.setAttribute("style","display: none;")
     }
-
-    const timeLabel = document.createElement("label")
-    const timeInput = document.createElement("input")
-
-    const node = document.createTextNode(formatedTime);
-    timeLabel.appendChild(node); 
-    timeInput.setAttribute("type","radio")
-    timeInput.setAttribute("name","timeSlot")
-    timeInput.setAttribute("id", time)
-    timeInput.setAttribute("value",time)
-    timeLabel.setAttribute("for",time)
-
-    appointmentTimesDiv.appendChild(timeInput)
-    appointmentTimesDiv.appendChild(timeLabel)
-  }
+    if(newSelect+"Times" == times.id||(newSelect == "default"&& times.id == "no_preference")){
+      times.removeAttribute("style")
+    }
+  })
 }
-function technicianBack(){
+function technicianBack(num){
+  document.getElementById("card"+num).remove()
 }
 function technicianNext(num){
-  const times = document.getElementsByName("timeSlot")
+  //check if technician is blank
+  if(document.getElementById("service"+num).value === ""){
+    errorMsg("Please choose a technician first")
+    return
+  }
+  const times = document.getElementsByName("timeSlot"+num)
   let selected = false;
   for(let i=0;i<times.length;i++){
     if(times.item(i).checked){

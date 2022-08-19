@@ -62,9 +62,45 @@ router.post('/new', checkAuthenticated, async (req,res) => {
 
 module.exports = router
 /*
-  //error message if no time is selected
-  if(document.getElementById("appointmentTimes"+0).value.length==0){
-    errorMsg("Please choose a time first")
-    return
-  }
+    <% technicians.forEach(technician => { %>
+      //puts technician into dropdown
+      const techOption = document.createElement("option")
+      techOption.setAttribute("value","<%=technician.name%>")
+      const node = document.createTextNode("<%=technician.name%>");
+      techOption.appendChild(node); 
+      const daysWorkingString = "<%=technician.daysWorking%>"
+      const daysWorking = daysWorkingString.split(',')
+      if(!daysWorking.includes(day)){
+        console.log("not working this day")
+        techOption.setAttribute("disabled","")
+      }
+      const servicesString ="<%=technician.services%>"
+      const services = servicesString.split(',')
+      if(!services.includes(cart[i].name)){
+        console.log("cannot do this service")
+        techOption.setAttribute("disabled","")
+      }
+      select.appendChild(techOption)
+    <% }) %>
+    let techOption = document.createElement("option")
+    let daysWorkingString, servicesString;
+    let daysWorking, services;
+    <% technicians.forEach(technician => { %>
+      //puts technician into dropdown
+      techOption.setAttribute("value","<%=technician.name%>")
+      techOption.innerHTML = "<%=technician.name%>"
+      daysWorkingString = "<%=technician.daysWorking%>"
+      daysWorking = daysWorkingString.split(',')
+      if(!daysWorking.includes(day)){
+        console.log("not working this day")
+        techOption.setAttribute("disabled","")
+      }
+      servicesString ="<%=technician.services%>"
+      services = servicesString.split(',')
+      if(!services.includes(cart[i].name)){
+        console.log("cannot do this service")
+        techOption.setAttribute("disabled","")
+      }
+      select.appendChild(techOption)
+    <% }) %>
   */
