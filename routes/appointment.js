@@ -38,69 +38,6 @@ router.post('/new', checkAuthenticated, async (req,res) => {
   const servicesString = req.body.services
   const servicesArray = servicesString.split(',')
   const services = servicesArray.slice(0,servicesArray.length-1)
-  /*
-  console.log("tech id: " + technician._id)
-  console.log("date: " + date)
-  console.log("time: " + time)
-  console.log("customer_id: " + customer_id)
-  console.log("duration: "  +duration)
-  console.log("price: "  + price)
-  console.log("services: " + services)
-
-  const appointment = await Appointment.create({
-    date: date,
-    time:time,
-    customer_id:customer_id,
-    technician_id:technician._id,
-    duration:duration,
-    price:price,
-    services:services
-  })
-  console.log(appointment)
-  */
 })
 
 module.exports = router
-/*
-    <% technicians.forEach(technician => { %>
-      //puts technician into dropdown
-      const techOption = document.createElement("option")
-      techOption.setAttribute("value","<%=technician.name%>")
-      const node = document.createTextNode("<%=technician.name%>");
-      techOption.appendChild(node); 
-      const daysWorkingString = "<%=technician.daysWorking%>"
-      const daysWorking = daysWorkingString.split(',')
-      if(!daysWorking.includes(day)){
-        console.log("not working this day")
-        techOption.setAttribute("disabled","")
-      }
-      const servicesString ="<%=technician.services%>"
-      const services = servicesString.split(',')
-      if(!services.includes(cart[i].name)){
-        console.log("cannot do this service")
-        techOption.setAttribute("disabled","")
-      }
-      select.appendChild(techOption)
-    <% }) %>
-    let techOption = document.createElement("option")
-    let daysWorkingString, servicesString;
-    let daysWorking, services;
-    <% technicians.forEach(technician => { %>
-      //puts technician into dropdown
-      techOption.setAttribute("value","<%=technician.name%>")
-      techOption.innerHTML = "<%=technician.name%>"
-      daysWorkingString = "<%=technician.daysWorking%>"
-      daysWorking = daysWorkingString.split(',')
-      if(!daysWorking.includes(day)){
-        console.log("not working this day")
-        techOption.setAttribute("disabled","")
-      }
-      servicesString ="<%=technician.services%>"
-      services = servicesString.split(',')
-      if(!services.includes(cart[i].name)){
-        console.log("cannot do this service")
-        techOption.setAttribute("disabled","")
-      }
-      select.appendChild(techOption)
-    <% }) %>
-  */

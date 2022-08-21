@@ -44,54 +44,18 @@
 </form>
 
 <script>
-class Appointment{
-  constructor(date,time,technicians_id,duration){
-    this.date = date.substring(1,date.length-1)
-    this.time = time.substring(1,time.length-1)
-    const technicians = technicians_id.substring(1,technicians_id.length-1).split('","')
-    this.technicians_id = technicians
-    this.duration = duration
-  }
-}
-class Technician{
-  constructor(name, _id, daysWorkingString, servicesString, upcomingAppointmentsString){
-    this.name = name
-    this._id = _id
-    this.daysWorking = daysWorkingString.split(',')
-    this.services = servicesString.split(',')
-    upcomingAppointmentsString = upcomingAppointmentsString.split("&#34;").join('"')
-    upcomingAppointmentsString = upcomingAppointmentsString.substring(2,upcomingAppointmentsString.length-2).split("},{")
-    this.upcomingAppointments = [];
-    upcomingAppointmentsString.forEach(appointmentString =>{
 
-      const appointmentParams = appointmentString.split(/"\w+":/g)
-
-      const date = appointmentParams[2].substring(0,appointmentParams[2].length-1) 
-      const time = appointmentParams[1].substring(0,appointmentParams[1].length-1) 
-      const technicians_id = appointmentParams[3].substring(1,appointmentParams[3].length-2)
-      const duration = appointmentParams[6].substring(0,appointmentParams[6].length-1) 
-
-      this.upcomingAppointments.push(
-        new Appointment(date,time,technicians_id,duration)
-      )
-      allUpcomingAppointments.push(
-        new Appointment(date,time,technicians_id,duration)
-      )
-
-    })
-  }
-}
-const techArray = [];
+techArray = [];
 const allUpcomingAppointments = [];
-
+let str, obj
 <% technicians.forEach(technician => { %>
-  techArray.push(new Technician(
-    "<%= technician.name %>",
-    "<%= technician._id %>",
-    "<%= technician.daysWorking %>",
-    "<%= technician.services %>",
-    "<%= JSON.stringify(technician.upcommingAppointments) %>"
-  ))
+  //put technician from server to string
+  str = "<%=JSON.stringify(technician)%>"
+  //format string for json.parse
+  str = str.split("&#34;").join('"')
+  //json.parse to turn string back into object that can be used locally
+  obj = JSON.parse(str)
+  techArray.push(obj)
 <% }) %>
 
 let date = "";
