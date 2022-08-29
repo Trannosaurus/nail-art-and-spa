@@ -18,19 +18,19 @@
     <p name="totalDuration" id="totalDuration">0<p>
   </div>
 
+  <h2 class="fs-secondary-heading fw-semi-bold">Book an appointment</h2>
 
   <div class="card active">
     <div>
-      <label for="date">Date</label>
+      <label for="date" class="fs-third-heading fw-semi-bold">Date: </label>
       <input name="date" id="date" type="date" required>
     </div>
 
-    <div>
+    <div class="services-container">
+      <h3 class="fs-third-heading fw-semi-bold">Services: </h3>
+      <hr style="width:80%;">
       <% services.forEach(service => { %>
-        <div id="<%= service.name %>" onclick="serviceSelect('<%=service.name%>','<%=service.price%>','<%=service.duration%>')">
-          <img height="150" width="100" src="<%= service.imagePath %>">
-          <h3><%= service.name %></h3>
-        </div>
+        <h3 class="fs-body fw-bold data" id="<%= service.name %>" onclick="serviceSelect('<%=service.name%>','<%=service.price%>','<%=service.duration%>')"><%= service.name %></h3>
       <% }) %>
     </div>
     <h3 onclick="showTechnicians()">Next</h3>

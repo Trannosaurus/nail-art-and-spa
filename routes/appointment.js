@@ -28,6 +28,9 @@ router.get('/new', checkAuthenticated, async (req,res) => {
     {technicians: technicians,
     services: services})
 })
+router.get('/test', async (req,res) => {
+  res.render('appointments/test.ejs')
+})
 router.post('/new', checkAuthenticated, async (req,res) => {
   const technician = await User.findOne({name: req.body.technicians})
   const date = new Date(req.body.date)

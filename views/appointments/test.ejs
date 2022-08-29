@@ -1,0 +1,66 @@
+<h1>Book an Appointment</h1>
+<form action="/appointment/new" method="POST">
+
+  <!-- these fields will be sent to server -->
+  <input type="hidden" id="cartTotalDuration" name="cartTotalDuration">
+  <input type="hidden" id="cartTotalPrice" name="cartTotalPrice">
+  <input type="hidden" id="services" name="services">
+
+  <div id="cart-container">
+    <h3>Cart: </h3>
+    <p id="cartCount" name="cartCount">0<p>
+    <h3>Total: </h3>
+    <p name="total" id="total">0<p>
+    <h3>Duration: </h3>
+    <p name="totalDuration" id="totalDuration">0<p>
+  </div>
+
+  <h2 class="fs-secondary-heading fw-semi-bold">Book an appointment</h2>
+
+  <div class="card active">
+    <label for="date" class="fs-third-heading fw-semi-bold">Date: </label>
+    <input name="date" id="date" type="date" required>
+
+    <h3 class="fs-third-heading fw-semi-bold">Services: </h3>
+    <hr style="width:80%;">
+
+    <div class="services-container"> 
+      <h3 class="fs-body fw-bold data">Manicure</h3>
+      <h3 class="fs-body fw-bold data">Pedicure</h3>
+      <h3 class="fs-body fw-bold data">Gel</h3>
+    </div>
+
+    <h3 onclick="showTechnicians()">Next</h3>
+  </div>
+  <div>
+    <button class="fw-bold even-columns">Cancel</button>
+    <button class="fw-bold even-columns">Next</button>
+  </div>
+
+  <div class="card">
+    <div class="even-columns>
+      <label for="technicians" class="fw-bold fs-third-heading">Choose a technician for: <label>
+      <select name="technicians">
+        <option value="Thuy">Thuy</option>
+        <option value="Ha">Ha</option>
+        <option value="An">An</option>
+      </select>
+
+      <h3 class="fw-bold fs-third-heading">Choose a time: </h3>
+      <hr style="width:80%;">
+
+      <div class="times-container"> 
+        <h3 class="fs-body fw-bold data">10:00</h3>
+        <h3 class="fs-body fw-bold data">10:30</h3>
+        <h3 class="fs-body fw-bold data">11:00</h3>
+      </div>
+    </div>
+
+  </div>
+
+  <div>
+    <a href="/">Cancel</a>
+    <button type="submit" onclick="serverVariables()">Submit</button>
+  </div>
+
+</form>

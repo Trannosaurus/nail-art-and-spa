@@ -1,0 +1,60 @@
+/*text colors*/
+.text-primary-white{
+  color: var(--clr-primary-white);
+}
+
+.text-accent-red{
+  color: var(--clr-accent-red)
+}
+.text-accent-yello{
+  color: var(--clr-accent-yellow)
+}
+.text-accent-blue{
+  color: var(--clr-accent-blue)
+}
+.text-accent-green{
+  color: var(--clr-accent-green)
+}
+
+/*background colors*/
+.bg-primary-light{
+  background-color: var(--clr-primary-light);
+}
+
+.bg-accent-red{
+  background-color: var(--clr-accent-red)
+}
+.bg-accent-yello{
+  background-color: var(--clr-accent-yellow)
+}
+.bg-accent-blue{
+  background-color: var(--clr-accent-blue)
+}
+.bg-accent-green{
+  background-color: var(--clr-accent-green)
+}
+
+/*font weight*/
+.fw-bold {
+ font-weight: var(--fw-bold);
+}
+.fw-semi-bold {
+  font-weight: var(--fw-semi-bold);
+}
+.fw-regular {
+  font-weight: var(--fw-regular);
+}
+
+/*font size*/
+.fs-body {
+  font-size: var(--fs-body);
+}
+.fs-primary-heading {
+  font-size: var(--fs-primary-heading);
+}
+.fs-secondary-heading {
+  font-size: var(--fs-secondary-heading);
+} 
+.fs-third-heading {
+  font-size: var(--fs-third-heading);
+} 

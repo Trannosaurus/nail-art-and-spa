@@ -1,0 +1,42 @@
+:root{
+  --clr-primary-light: #F1EEE8;
+
+  --clr-primary-black: #000000;
+  --clr-primary-white: #FFFFFF;
+
+  --clr-accent-red: #EB493D ;
+  --clr-accent-yellow: #F0CF31;
+  --clr-accent-blue: #488DD5;
+  --clr-accent-green: #40A656;
+
+  --clr-neutral-light: ;
+  --clr-neutral-dark: ;
+
+  --ff-primary: 'Jost', sans-serif;
+
+  --ff-body: var(--ff-primary);
+  --ff-heading: var(--ff-primary);
+  
+  --fw-regular: 300;
+  --fw-semi-bold: 600;
+  --fw-bold: 700;
+
+  --fs-400: 1rem;
+  --fs-450: 1.25rem;
+  --fs-500: 1.5rem;
+  --fs-600: 2rem;
+  --fs-700: 3rem;
+  --fs-800: 4rem;
+   
+  --fs-body: var(--fs-400);
+  --fs-primary-heading: var(--fs-800) ;
+  --fs-secondary-heading: var(--fs-700);
+  --fs-third-heading: var(--fs-500)
+}
+@media(min-width: 50em){
+  :root{
+    --fs-primary-heading: var(--fs-700) ;
+    --fs-secondary-heading: var(--fs-600) ;
+    --fs-third-heading: var(--fs-450)
+  }
+}
